@@ -1,0 +1,2813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PRODIGY — Bhavya Nayan Jani</title>
+
+  <meta
+    name="description"
+    content="Bhavya Nayan Jani — PRODIGY. Building, creating, experimenting."
+  />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root {
+      --black: #080808;
+      --black-soft: #0d0d0d;
+      --bone: #eee9df;
+      --muted: #8c8983;
+      --line: rgba(238, 233, 223, 0.18);
+      --line-soft: rgba(238, 233, 223, 0.08);
+
+      --display: "Bebas Neue", sans-serif;
+      --sans: "Inter", sans-serif;
+      --mono: "DM Mono", monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: auto;
+      background: var(--black);
+    }
+
+    body {
+      background: var(--black);
+      color: var(--bone);
+      font-family: var(--sans);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    body.loading {
+      overflow: hidden;
+    }
+
+    ::selection {
+      background: var(--bone);
+      color: var(--black);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* =========================================================
+       LOADER
+    ========================================================= */
+
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 20000;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: var(--black);
+      overflow: hidden;
+    }
+
+    .loader-inner {
+      position: relative;
+      width: min(90vw, 1200px);
+    }
+
+    .loader-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      margin-bottom: 25px;
+
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .loader-name {
+      overflow: hidden;
+    }
+
+    .loader-name span {
+      display: block;
+
+      font-family: var(--display);
+      font-size: clamp(70px, 15vw, 220px);
+      line-height: 0.8;
+      letter-spacing: -0.02em;
+
+      transform: translateY(110%);
+    }
+
+    .loader-line {
+      width: 100%;
+      height: 1px;
+
+      background: var(--line);
+
+      overflow: hidden;
+    }
+
+    .loader-line-inner {
+      width: 0%;
+      height: 100%;
+      background: var(--bone);
+    }
+
+    .loader-percent {
+      margin-top: 14px;
+
+      display: flex;
+      justify-content: space-between;
+
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+    }
+
+    /* =========================================================
+       GLOBAL CINEMATIC LAYERS
+    ========================================================= */
+
+    .film-frame {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+
+      pointer-events: none;
+
+      border: 1px solid rgba(238, 233, 223, 0.13);
+    }
+
+    .film-frame::before,
+    .film-frame::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+
+      height: 40px;
+
+      background: var(--black);
+    }
+
+    .film-frame::before {
+      top: 0;
+    }
+
+    .film-frame::after {
+      bottom: 0;
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 8000;
+
+      pointer-events: none;
+
+      background:
+        radial-gradient(
+          ellipse at center,
+          transparent 40%,
+          rgba(0, 0, 0, 0.28) 72%,
+          rgba(0, 0, 0, 0.75) 100%
+        );
+    }
+
+    .grain {
+      position: fixed;
+      inset: -50%;
+
+      z-index: 9999;
+
+      pointer-events: none;
+
+      opacity: 0.055;
+
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E");
+
+      animation: grainMove 0.2s steps(2) infinite;
+    }
+
+    @keyframes grainMove {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      25% {
+        transform: translate(3%, -2%);
+      }
+
+      50% {
+        transform: translate(-2%, 3%);
+      }
+
+      75% {
+        transform: translate(2%, 2%);
+      }
+
+      100% {
+        transform: translate(-3%, -3%);
+      }
+    }
+
+    /* =========================================================
+       CURSOR
+    ========================================================= */
+
+    .cursor {
+      position: fixed;
+
+      width: 8px;
+      height: 8px;
+
+      border-radius: 50%;
+
+      background: var(--bone);
+
+      pointer-events: none;
+
+      z-index: 10001;
+
+      transform: translate(-50%, -50%);
+
+      mix-blend-mode: difference;
+
+      transition:
+        width 0.25s ease,
+        height 0.25s ease;
+    }
+
+    .cursor.large {
+      width: 45px;
+      height: 45px;
+    }
+
+    @media (max-width: 768px) {
+      .cursor {
+        display: none;
+      }
+
+      body {
+        cursor: auto;
+      }
+    }
+
+    /* =========================================================
+       FIXED WHATSAPP / CONTACT
+    ========================================================= */
+
+    .whatsapp-float {
+      position: fixed;
+
+      right: 45px;
+      bottom: 45px;
+
+      z-index: 9100;
+
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      padding: 11px 15px 11px 18px;
+
+      border: 1px solid rgba(238, 233, 223, 0.35);
+
+      background: rgba(8, 8, 8, 0.55);
+
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+
+      color: var(--bone);
+
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+
+      opacity: 0;
+      visibility: hidden;
+
+      transform: translateY(20px);
+
+      transition:
+        background 0.35s ease,
+        color 0.35s ease,
+        border-color 0.35s ease,
+        transform 0.35s ease;
+    }
+
+    .whatsapp-float.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .whatsapp-float:hover {
+      background: var(--bone);
+      color: var(--black);
+
+      border-color: var(--bone);
+
+      transform: translateY(-4px);
+    }
+
+    .whatsapp-float .wa-arrow {
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    @media (max-width: 768px) {
+      .whatsapp-float {
+        right: 20px;
+        bottom: 22px;
+
+        padding: 11px 13px;
+      }
+    }
+
+    /* =========================================================
+       INTRO
+    ========================================================= */
+
+    #intro {
+      position: relative;
+      height: 520vh;
+      background: var(--black);
+    }
+
+    .intro-pin {
+      position: relative;
+
+      width: 100%;
+      height: 100vh;
+
+      overflow: hidden;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .intro-meta {
+      position: absolute;
+
+      top: 55px;
+      left: 55px;
+
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+
+      text-transform: uppercase;
+    }
+
+    .intro-meta-right {
+      position: absolute;
+
+      top: 55px;
+      right: 55px;
+
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+
+      text-transform: uppercase;
+    }
+
+    .intro-center {
+      position: relative;
+
+      width: min(88vw, 1350px);
+
+      text-align: center;
+    }
+
+    .intro-line {
+      overflow: hidden;
+    }
+
+    .intro-line span {
+      display: block;
+
+      font-family: var(--display);
+      font-size: clamp(54px, 9vw, 150px);
+
+      line-height: 0.84;
+
+      letter-spacing: -0.015em;
+
+      transform: translateY(110%);
+    }
+
+    .intro-line.small span {
+      font-size: clamp(38px, 6vw, 95px);
+    }
+
+    .intro-line.passion span {
+      display: inline-block;
+
+      font-family: var(--display);
+
+      font-size: 1.2em;
+
+      letter-spacing: 0.025em;
+
+      text-shadow:
+        0 0 25px rgba(238, 233, 223, 0.12),
+        0 0 60px rgba(238, 233, 223, 0.04);
+    }
+
+    .intro-bottom {
+      position: absolute;
+
+      bottom: 55px;
+      left: 55px;
+      right: 55px;
+
+      display: flex;
+      justify-content: space-between;
+
+      font-family: var(--mono);
+      font-size: 9px;
+
+      color: var(--muted);
+
+      letter-spacing: 0.14em;
+
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       HERO
+    ========================================================= */
+
+    .hero {
+      position: relative;
+
+      min-height: 100vh;
+
+      display: flex;
+      align-items: flex-end;
+
+      padding: 90px 6vw 110px;
+
+      background: var(--black);
+
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(238, 233, 223, 0.025),
+          transparent
+        );
+
+      opacity: 0.6;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+
+      width: 100%;
+    }
+
+    .hero-kicker {
+      margin-bottom: 30px;
+
+      font-family: var(--mono);
+      font-size: 11px;
+
+      letter-spacing: 0.2em;
+
+      color: var(--muted);
+
+      text-transform: uppercase;
+    }
+
+    .hero-name {
+      font-family: var(--display);
+
+      font-size: clamp(90px, 18vw, 280px);
+
+      line-height: 0.72;
+
+      letter-spacing: -0.02em;
+
+      text-transform: uppercase;
+    }
+
+    .hero-name span {
+      display: block;
+    }
+
+    .hero-name .second {
+      margin-left: 10vw;
+    }
+
+    .hero-bottom {
+      margin-top: 60px;
+
+      display: flex;
+
+      justify-content: space-between;
+      align-items: flex-end;
+
+      gap: 40px;
+    }
+
+    .hero-description {
+      max-width: 440px;
+
+      font-size: 15px;
+
+      line-height: 1.7;
+
+      color: #b9b5ae;
+    }
+
+    .hero-side {
+      text-align: right;
+
+      font-family: var(--mono);
+
+      font-size: 10px;
+
+      line-height: 1.8;
+
+      letter-spacing: 0.12em;
+
+      color: var(--muted);
+
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       SECTION BASE
+    ========================================================= */
+
+    .section {
+      position: relative;
+
+      min-height: 100vh;
+
+      padding: 150px 6vw;
+
+      border-top: 1px solid var(--line-soft);
+
+      overflow: hidden;
+    }
+
+    .section-label {
+      position: absolute;
+
+      top: 45px;
+      left: 6vw;
+
+      font-family: var(--mono);
+
+      font-size: 9px;
+
+      letter-spacing: 0.2em;
+
+      color: var(--muted);
+
+      text-transform: uppercase;
+    }
+
+    .section-number {
+      position: absolute;
+
+      top: 45px;
+      right: 6vw;
+
+      font-family: var(--mono);
+
+      font-size: 9px;
+
+      letter-spacing: 0.2em;
+
+      color: var(--muted);
+    }
+
+    .section-title {
+      font-family: var(--display);
+
+      font-size: clamp(75px, 13vw, 190px);
+
+      line-height: 0.8;
+
+      letter-spacing: -0.015em;
+    }
+
+    /* =========================================================
+       IDENTITY
+    ========================================================= */
+
+    .identity {
+      display: flex;
+      align-items: center;
+    }
+
+    .identity-inner {
+      width: 100%;
+    }
+
+    .identity-grid {
+      margin-top: 80px;
+
+      display: grid;
+
+      grid-template-columns: 1.1fr 0.9fr;
+
+      gap: 10vw;
+
+      align-items: end;
+    }
+
+    .identity-copy {
+      font-size: clamp(24px, 3vw, 45px);
+
+      line-height: 1.25;
+
+      max-width: 800px;
+    }
+
+    .identity-copy em {
+      font-style: normal;
+
+      color: var(--muted);
+    }
+
+    .identity-meta {
+      font-family: var(--mono);
+
+      font-size: 10px;
+
+      line-height: 2;
+
+      letter-spacing: 0.12em;
+
+      color: var(--muted);
+
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       STATEMENT
+    ========================================================= */
+
+    .statement {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+
+      min-height: 115vh;
+    }
+
+    .statement-inner {
+      width: min(1100px, 90vw);
+    }
+
+    .statement-small {
+      margin-bottom: 35px;
+
+      font-family: var(--mono);
+
+      font-size: 10px;
+
+      letter-spacing: 0.2em;
+
+      color: var(--muted);
+
+      text-transform: uppercase;
+    }
+
+    .statement-text {
+      font-family: var(--display);
+
+      font-size: clamp(58px, 9vw, 135px);
+
+      line-height: 0.88;
+    }
+
+    .statement-text .dim {
+      color: #5f5c57;
+    }
+
+    /* =========================================================
+       WORK
+    ========================================================= */
+
+    .work {
+      padding-bottom: 180px;
+    }
+
+    .work-header {
+      margin-bottom: 110px;
+    }
+
+    .work-intro {
+      margin-top: 45px;
+
+      max-width: 600px;
+
+      color: var(--muted);
+
+      font-size: 14px;
+
+      line-height: 1.7;
+    }
+
+    .project-list {
+      border-top: 1px solid var(--line);
+    }
+
+    .project {
+      position: relative;
+
+      display: grid;
+
+      grid-template-columns: 90px 1fr 160px;
+
+      align-items: center;
+
+      min-height: 180px;
+
+      border-bottom: 1px solid var(--line);
+
+      transition: padding 0.5s ease;
+    }
+
+    .project:hover {
+      padding-left: 25px;
+    }
+
+    .project-number {
+      font-family: var(--mono);
+
+      font-size: 10px;
+
+      color: var(--muted);
+
+      letter-spacing: 0.12em;
+    }
+
+    .project-name {
+      font-family: var(--display);
+
+      font-size: clamp(55px, 8vw, 110px);
+
+      line-height: 0.8;
+    }
+
+    .project-info {
+      text-align: right;
+
+      font-family: var(--mono);
+
+      font-size: 9px;
+
+      line-height: 1.8;
+
+      color: var(--muted);
+
+      letter-spacing: 0.1em;
+
+      text-transform: uppercase;
+    }
+
+    .project-arrow {
+      position: absolute;
+
+      right: 0;
+
+      top: 50%;
+
+      transform: translateY(-50%);
+
+      opacity: 0;
+
+      font-size: 30px;
+
+      transition: opacity 0.35s ease;
+    }
+
+    .project:hover .project-arrow {
+      opacity: 1;
+    }
+
+    /* =========================================================
+       PROCESS
+    ========================================================= */
+
+    .process {
+      background: #0a0a0a;
+    }
+
+    .process-grid {
+      margin-top: 110px;
+
+      display: grid;
+
+      grid-template-columns: repeat(3, 1fr);
+
+      border-top: 1px solid var(--line);
+
+      border-left: 1px solid var(--line);
+    }
+
+    .process-item {
+      min-height: 350px;
+
+      padding: 35px;
+
+      border-right: 1px solid var(--line);
+
+      border-bottom: 1px solid var(--line);
+    }
+
+    .process-number {
+      font-family: var(--mono);
+
+      font-size: 10px;
+
+      color: var(--muted);
+    }
+
+    .process-title {
+      margin-top: 100px;
+
+      font-family: var(--display);
+
+      font-size: clamp(42px, 5vw, 70px);
+
+      line-height: 0.85;
+    }
+
+    .process-description {
+      margin-top: 30px;
+
+      max-width: 300px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+
+      line-height: 1.7;
+    }
+
+    /* =========================================================
+       PHILOSOPHY
+    ========================================================= */
+
+    .philosophy {
+      display: flex;
+      align-items: center;
+    }
+
+    .philosophy-content {
+      width: 100%;
+    }
+
+    .philosophy-quote {
+      margin-top: 90px;
+
+      max-width: 1150px;
+
+      font-family: var(--display);
+
+      font-size: clamp(65px, 10vw, 150px);
+
+      line-height: 0.82;
+    }
+
+    .philosophy-quote span {
+      color: #55524e;
+    }
+
+    .philosophy-footer {
+      margin-top: 80px;
+
+      display: flex;
+      justify-content: space-between;
+
+      font-family: var(--mono);
+
+      font-size: 9px;
+
+      color: var(--muted);
+
+      letter-spacing: 0.14em;
+
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       CURRENT CHAPTER
+    ========================================================= */
+
+    .current {
+      min-height: 100vh;
+
+      display: flex;
+      align-items: center;
+
+      background: var(--bone);
+
+      color: var(--black);
+    }
+
+    .current .section-label,
+    .current .section-number {
+      color: rgba(8, 8, 8, 0.5);
+    }
+
+    .current-content {
+      width: 100%;
+    }
+
+    .current-title {
+      font-family: var(--display);
+
+      font-size: clamp(90px, 18vw, 270px);
+
+      line-height: 0.72;
+
+      letter-spacing: -0.02em;
+    }
+
+    .current-description {
+      margin-top: 80px;
+
+      max-width: 700px;
+
+      font-size: 18px;
+
+      line-height: 1.65;
+    }
+
+    .current-status {
+      margin-top: 60px;
+
+      display: flex;
+
+      gap: 15px;
+
+      align-items: center;
+
+      font-family: var(--mono);
+
+      font-size: 10px;
+
+      letter-spacing: 0.15em;
+
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: var(--black);
+
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.25;
+      }
+    }
+
+    /* =========================================================
+       CONTACT
+    ========================================================= */
+
+    .contact {
+      min-height: 110vh;
+
+      display: flex;
+      align-items: center;
+
+      padding-top: 180px;
+      padding-bottom: 180px;
+    }
+
+    .contact-content {
+      width: 100%;
+    }
+
+    .contact-pre {
+      margin-bottom: 35px;
+
+      font-family: var(--mono);
+
+      font-size: 10px;
+
+      letter-spacing: 0.2em;
+
+      color: var(--muted);
+
+      text-transform: uppercase;
+    }
+
+    .contact-title {
+      font-family: var(--display);
+
+      font-size: clamp(90px, 17vw, 250px);
+
+      line-height: 0.7;
+
+      letter-spacing: -0.02em;
+    }
+
+    .contact-title span {
+      display: block;
+    }
+
+    .contact-title .offset {
+      margin-left: 15vw;
+    }
+
+    .contact-bottom {
+      margin-top: 110px;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: flex-end;
+
+      gap: 50px;
+    }
+
+    .contact-copy {
+      max-width: 500px;
+
+      color: var(--muted);
+
+      font-size: 14px;
+
+      line-height: 1.7;
+    }
+
+    .contact-links {
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: flex-end;
+
+      gap: 15px;
+    }
+
+    .contact-link {
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 14px;
+
+      padding-bottom: 8px;
+
+      border-bottom: 1px solid var(--line);
+
+      font-family: var(--mono);
+
+      font-size: 11px;
+
+      letter-spacing: 0.12em;
+
+      text-transform: uppercase;
+
+      transition:
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .contact-link:hover {
+      color: #aaa59d;
+
+      border-color: #aaa59d;
+
+      transform: translateX(-8px);
+    }
+
+    .whatsapp-main {
+      margin-top: 35px;
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 20px;
+
+      padding: 18px 22px;
+
+      border: 1px solid rgba(238, 233, 223, 0.4);
+
+      font-family: var(--mono);
+
+      font-size: 11px;
+
+      letter-spacing: 0.15em;
+
+      transition:
+        background 0.4s ease,
+        color 0.4s ease,
+        transform 0.4s ease;
+    }
+
+    .whatsapp-main:hover {
+      background: var(--bone);
+
+      color: var(--black);
+
+      transform: translateY(-5px);
+    }
+
+    .whatsapp-main-arrow {
+      font-size: 18px;
+    }
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+
+    footer {
+      position: relative;
+
+      padding: 35px 6vw 55px;
+
+      border-top: 1px solid var(--line);
+
+      background: var(--black);
+    }
+
+    .footer-top {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      margin-bottom: 120px;
+    }
+
+    .footer-brand {
+      font-family: var(--display);
+
+      font-size: clamp(65px, 11vw, 160px);
+
+      line-height: 0.75;
+    }
+
+    .footer-meta {
+      font-family: var(--mono);
+
+      font-size: 9px;
+
+      color: var(--muted);
+
+      letter-spacing: 0.14em;
+
+      text-transform: uppercase;
+
+      text-align: right;
+
+      line-height: 2;
+    }
+
+    .footer-bottom {
+      display: flex;
+
+      justify-content: space-between;
+
+      font-family: var(--mono);
+
+      font-size: 9px;
+
+      color: var(--muted);
+
+      letter-spacing: 0.12em;
+
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 900px) {
+      .intro-meta {
+        left: 25px;
+        top: 45px;
+      }
+
+      .intro-meta-right {
+        right: 25px;
+        top: 45px;
+      }
+
+      .intro-bottom {
+        left: 25px;
+        right: 25px;
+        bottom: 45px;
+      }
+
+      .hero {
+        padding: 80px 25px 80px;
+      }
+
+      .hero-name {
+        font-size: clamp(80px, 21vw, 170px);
+      }
+
+      .hero-name .second {
+        margin-left: 0;
+      }
+
+      .hero-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-side {
+        text-align: left;
+      }
+
+      .section {
+        padding: 120px 25px;
+      }
+
+      .section-label {
+        left: 25px;
+      }
+
+      .section-number {
+        right: 25px;
+      }
+
+      .identity-grid {
+        grid-template-columns: 1fr;
+
+        gap: 60px;
+      }
+
+      .process-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .project {
+        grid-template-columns: 50px 1fr;
+
+        min-height: 130px;
+      }
+
+      .project-info {
+        display: none;
+      }
+
+      .project-name {
+        font-size: clamp(50px, 14vw, 90px);
+      }
+
+      .project-arrow {
+        right: 5px;
+      }
+
+      .philosophy-footer {
+        flex-direction: column;
+
+        gap: 15px;
+      }
+
+      .current-description {
+        font-size: 16px;
+      }
+
+      .contact-bottom {
+        flex-direction: column;
+
+        align-items: flex-start;
+      }
+
+      .contact-links {
+        align-items: flex-start;
+      }
+
+      .contact-title .offset {
+        margin-left: 0;
+      }
+
+      .footer-top {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 40px;
+
+        margin-bottom: 80px;
+      }
+
+      .footer-meta {
+        text-align: left;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .film-frame {
+        border-width: 0;
+      }
+
+      .film-frame::before,
+      .film-frame::after {
+        height: 18px;
+      }
+
+      .intro-line span {
+        font-size: clamp(45px, 13vw, 75px);
+      }
+
+      .intro-line.small span {
+        font-size: clamp(30px, 9vw, 55px);
+      }
+
+      .section-title {
+        font-size: clamp(65px, 20vw, 110px);
+      }
+
+      .identity-copy {
+        font-size: 22px;
+      }
+
+      .statement-text {
+        font-size: clamp(48px, 15vw, 80px);
+      }
+
+      .process-item {
+        min-height: 300px;
+
+        padding: 25px;
+      }
+
+      .process-title {
+        margin-top: 70px;
+      }
+
+      .contact {
+        min-height: 100vh;
+      }
+
+      .contact-title {
+        font-size: clamp(75px, 21vw, 130px);
+      }
+
+      .contact-bottom {
+        margin-top: 75px;
+      }
+    }
+
+    /* =========================================================
+       REDUCED MOTION
+    ========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="loading">
+
+  <!-- =======================================================
+       LOADER
+  ======================================================== -->
+
+  <div class="loader" id="loader">
+
+    <div class="loader-inner">
+
+      <div class="loader-top">
+        <span>Portfolio / 001</span>
+        <span>Bhavya Nayan Jani</span>
+      </div>
+
+      <div class="loader-name">
+        <span>PRODIGY</span>
+      </div>
+
+      <div class="loader-line">
+        <div class="loader-line-inner"></div>
+      </div>
+
+      <div class="loader-percent">
+        <span>Loading experience</span>
+        <span id="loaderPercent">000%</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =======================================================
+       CINEMATIC OVERLAYS
+  ======================================================== -->
+
+  <div class="film-frame"></div>
+
+  <div class="vignette"></div>
+
+  <div class="grain"></div>
+
+  <div class="cursor"></div>
+
+
+  <!-- =======================================================
+       FIXED WHATSAPP
+  ======================================================== -->
+
+  <a
+    class="whatsapp-float"
+    id="whatsappFloat"
+    href="https://wa.me/916353460104?text=Hey%20Bhavya%2C%20I%20came%20across%20your%20portfolio%20and%20wanted%20to%20talk%20about%20a%20project."
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Contact Bhavya on WhatsApp"
+  >
+    <span>LET'S TALK</span>
+    <span class="wa-arrow">↗</span>
+  </a>
+
+
+  <!-- =======================================================
+       INTRO
+  ======================================================== -->
+
+  <section id="intro">
+
+    <div class="intro-pin">
+
+      <div class="intro-meta">
+        CHAPTER 00
+      </div>
+
+      <div class="intro-meta-right">
+        THE OPENING
+      </div>
+
+      <div class="intro-center">
+
+        <div class="intro-line">
+          <span>THE DIFFERENCE</span>
+        </div>
+
+        <div class="intro-line small">
+          <span>BETWEEN THE</span>
+        </div>
+
+        <div class="intro-line">
+          <span>ORDINARY PERSON</span>
+        </div>
+
+        <div class="intro-line small">
+          <span>AND A GREAT PERSON</span>
+        </div>
+
+        <div class="intro-line passion">
+          <span>IS PASSION.</span>
+        </div>
+
+      </div>
+
+      <div class="intro-bottom">
+        <span>Keep scrolling</span>
+        <span>01 — 05</span>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       HERO
+  ======================================================== -->
+
+  <section class="hero" id="hero">
+
+    <div class="hero-content">
+
+      <div class="hero-kicker">
+        Bhavya Nayan Jani — PRODIGY
+      </div>
+
+      <h1 class="hero-name">
+        <span>BHAVYA</span>
+        <span class="second">NAYAN</span>
+      </h1>
+
+      <div class="hero-bottom">
+
+        <p class="hero-description">
+          I'm not here to pretend I've already made it.
+          I'm building.
+          I'm experimenting.
+          I'm figuring things out.
+          And I'm willing to put in the work until the
+          things I imagine become real.
+        </p>
+
+        <div class="hero-side">
+          <div>Currently building</div>
+          <div>Design / Web / Music / Ideas</div>
+          <div>India — 2026</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       IDENTITY
+  ======================================================== -->
+
+  <section class="section identity">
+
+    <div class="identity-inner">
+
+      <div class="section-label">
+        Identity
+      </div>
+
+      <div class="section-number">
+        01 / 07
+      </div>
+
+      <h2 class="section-title">
+        WHO
+      </h2>
+
+      <div class="identity-grid">
+
+        <p class="identity-copy">
+          I don't really want to put myself inside
+          one box.
+          <br><br>
+          I want to create.
+          <em>Websites.</em>
+          <em>Music.</em>
+          <em>Ideas.</em>
+          <em>Businesses.</em>
+          <em>Things that shouldn't exist until someone makes them.</em>
+        </p>
+
+        <div class="identity-meta">
+          <div>01 — Artist</div>
+          <div>02 — Builder</div>
+          <div>03 — Entrepreneur</div>
+          <div>04 — Student</div>
+          <div>05 — Still becoming</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       STATEMENT
+  ======================================================== -->
+
+  <section class="section statement">
+
+    <div class="section-label">
+      Statement
+    </div>
+
+    <div class="section-number">
+      02 / 07
+    </div>
+
+    <div class="statement-inner">
+
+      <div class="statement-small">
+        A simple truth
+      </div>
+
+      <div class="statement-text">
+
+        I'M NOT THE
+        <span class="dim">BEST.</span>
+
+        <br>
+
+        <span class="dim">NOT YET.</span>
+
+        <br><br>
+
+        BUT I'M
+        <br>
+
+        <span class="dim">WILLING.</span>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       WORK
+  ======================================================== -->
+
+  <section class="section work">
+
+    <div class="section-label">
+      Selected work
+    </div>
+
+    <div class="section-number">
+      03 / 07
+    </div>
+
+    <div class="work-header">
+
+      <h2 class="section-title">
+        WORK
+      </h2>
+
+      <p class="work-intro">
+        A few things I've actually built.
+        Not a collection of fake case studies.
+        Just real projects, experiments and things
+        that made it out of my head and into the world.
+      </p>
+
+    </div>
+
+
+    <div class="project-list">
+
+      <!-- PROJECT 01 -->
+
+      <a
+        href="https://miles1427.github.io/newcafe/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="project"
+      >
+
+        <div class="project-number">
+          001
+        </div>
+
+        <div class="project-name">
+          CAFE DE MEET
+        </div>
+
+        <div class="project-info">
+          Website<br>
+          Surat
+        </div>
+
+        <div class="project-arrow">
+          ↗
+        </div>
+
+      </a>
+
+
+      <!-- PROJECT 02 -->
+
+      <a
+        href="https://miles1427.github.io/agency-website/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="project"
+      >
+
+        <div class="project-number">
+          002
+        </div>
+
+        <div class="project-name">
+          CATALYST
+        </div>
+
+        <div class="project-info">
+          Marketing<br>
+          Website
+        </div>
+
+        <div class="project-arrow">
+          ↗
+        </div>
+
+      </a>
+
+
+      <!-- PROJECT 03 -->
+
+      <div class="project">
+
+        <div class="project-number">
+          003
+        </div>
+
+        <div class="project-name">
+          MORE SOON
+        </div>
+
+        <div class="project-info">
+          Currently<br>
+          Building
+        </div>
+
+        <div class="project-arrow">
+          +
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       PROCESS
+  ======================================================== -->
+
+  <section class="section process">
+
+    <div class="section-label">
+      Process
+    </div>
+
+    <div class="section-number">
+      04 / 07
+    </div>
+
+    <h2 class="section-title">
+      HOW
+    </h2>
+
+    <div class="process-grid">
+
+      <div class="process-item">
+
+        <div class="process-number">
+          01 — OBSERVE
+        </div>
+
+        <div class="process-title">
+          FIND<br>
+          THE IDEA
+        </div>
+
+        <p class="process-description">
+          Understand the problem, the feeling,
+          the audience and the reason something
+          needs to exist in the first place.
+        </p>
+
+      </div>
+
+
+      <div class="process-item">
+
+        <div class="process-number">
+          02 — BUILD
+        </div>
+
+        <div class="process-title">
+          MAKE<br>
+          IT REAL
+        </div>
+
+        <p class="process-description">
+          Design it, code it, break it,
+          rebuild it and keep pushing until
+          the idea starts looking like itself.
+        </p>
+
+      </div>
+
+
+      <div class="process-item">
+
+        <div class="process-number">
+          03 — REFINE
+        </div>
+
+        <div class="process-title">
+          MAKE<br>
+          IT BETTER
+        </div>
+
+        <p class="process-description">
+          The first version is almost never
+          the final version. Obsession lives
+          in the details.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       PHILOSOPHY
+  ======================================================== -->
+
+  <section class="section philosophy">
+
+    <div class="section-label">
+      Philosophy
+    </div>
+
+    <div class="section-number">
+      05 / 07
+    </div>
+
+    <div class="philosophy-content">
+
+      <h2 class="section-title">
+        WHY
+      </h2>
+
+      <div class="philosophy-quote">
+
+        <div>
+          PASSION
+        </div>
+
+        <div>
+          TO BE
+        </div>
+
+        <div>
+          THE <span>BEST.</span>
+        </div>
+
+        <div>
+          THE <span>GOAT.</span>
+        </div>
+
+      </div>
+
+      <div class="philosophy-footer">
+
+        <span>
+          Not a claim.
+        </span>
+
+        <span>
+          A direction.
+        </span>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       CURRENT CHAPTER
+  ======================================================== -->
+
+  <section class="section current">
+
+    <div class="section-label">
+      Current chapter
+    </div>
+
+    <div class="section-number">
+      06 / 07
+    </div>
+
+    <div class="current-content">
+
+      <div class="current-title">
+        BUILDING.
+      </div>
+
+      <p class="current-description">
+        Right now, I'm in the part of the story where
+        nothing is guaranteed yet.
+        I'm learning, building websites, exploring
+        music, experimenting with ideas and trying
+        to create enough momentum that one day
+        I don't have to introduce myself.
+      </p>
+
+      <div class="current-status">
+
+        <span class="status-dot"></span>
+
+        <span>
+          Chapter active
+        </span>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       CONTACT
+  ======================================================== -->
+
+  <section class="section contact" id="contact">
+
+    <div class="section-label">
+      Final frame
+    </div>
+
+    <div class="section-number">
+      07 / 07
+    </div>
+
+    <div class="contact-content">
+
+      <div class="contact-pre">
+        If you've made it this far
+      </div>
+
+      <h2 class="contact-title">
+
+        <span>
+          LET'S
+        </span>
+
+        <span class="offset">
+          TALK.
+        </span>
+
+      </h2>
+
+
+      <div class="contact-bottom">
+
+        <div>
+
+          <p class="contact-copy">
+            Have an idea?
+            Need a website?
+            Want to build something?
+            Or maybe you just want to talk about
+            something interesting.
+            <br><br>
+            I'm around.
+          </p>
+
+          <a
+            class="whatsapp-main"
+            href="https://wa.me/916353460104?text=Hey%20Bhavya%2C%20I%20came%20across%20your%20portfolio%20and%20wanted%20to%20talk%20about%20a%20project."
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <span>
+              WHATSAPP ME
+            </span>
+
+            <span class="whatsapp-main-arrow">
+              ↗
+            </span>
+
+          </a>
+
+        </div>
+
+
+        <div class="contact-links">
+
+          <a
+            class="contact-link"
+            href="mailto:janibhavy1427@gmail.com"
+          >
+            EMAIL
+            <span>↗</span>
+          </a>
+
+          <a
+            class="contact-link"
+            href="tel:+916353460104"
+          >
+            PHONE
+            <span>↗</span>
+          </a>
+
+          <a
+            class="contact-link"
+            href="https://wa.me/916353460104"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            WHATSAPP
+            <span>↗</span>
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       FOOTER
+  ======================================================== -->
+
+  <footer>
+
+    <div class="footer-top">
+
+      <div class="footer-brand">
+        PRODIGY
+      </div>
+
+      <div class="footer-meta">
+
+        <div>
+          Bhavya Nayan Jani
+        </div>
+
+        <div>
+          India
+        </div>
+
+        <div>
+          2026
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+      <span>
+        © 2026 PRODIGY
+      </span>
+
+      <span>
+        END OF CHAPTER
+      </span>
+
+      <span>
+        KEEP BUILDING.
+      </span>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =======================================================
+       JAVASCRIPT
+  ======================================================== -->
+
+  <script>
+
+    gsap.registerPlugin(ScrollTrigger);
+
+
+    /* =======================================================
+       CURSOR
+    ======================================================== */
+
+    const cursor = document.querySelector(".cursor");
+
+    if (window.innerWidth > 768) {
+
+      window.addEventListener("mousemove", (e) => {
+
+        gsap.to(cursor, {
+          x: e.clientX,
+          y: e.clientY,
+          duration: 0.12,
+          ease: "power2.out"
+        });
+
+      });
+
+
+      document.querySelectorAll("a").forEach((link) => {
+
+        link.addEventListener("mouseenter", () => {
+          cursor.classList.add("large");
+        });
+
+        link.addEventListener("mouseleave", () => {
+          cursor.classList.remove("large");
+        });
+
+      });
+
+    }
+
+
+    /* =======================================================
+       LOADER
+    ======================================================== */
+
+    const loader = document.querySelector("#loader");
+    const loaderName = document.querySelector(".loader-name span");
+    const loaderLine = document.querySelector(".loader-line-inner");
+    const loaderPercent = document.querySelector("#loaderPercent");
+
+    const loaderTL = gsap.timeline();
+
+    loaderTL
+      .to(loaderName, {
+        y: "0%",
+        duration: 1.2,
+        ease: "power4.out"
+      })
+      .to(
+        loaderLine,
+        {
+          width: "100%",
+          duration: 1.8,
+          ease: "power2.inOut",
+          onUpdate: function () {
+
+            const progress =
+              Math.round(this.progress() * 100);
+
+            loaderPercent.textContent =
+              String(progress).padStart(3, "0") + "%";
+
+          }
+        }
+      )
+      .to({}, {
+        duration: 0.25
+      })
+      .to(loader, {
+        yPercent: -100,
+        duration: 1.2,
+        ease: "power4.inOut"
+      })
+      .set(document.body, {
+        className: ""
+      });
+
+
+    /* =======================================================
+       INTRO CINEMATIC TIMELINE
+    ======================================================== */
+
+    const introPin = document.querySelector(".intro-pin");
+
+    const introTL = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#intro",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1.1,
+        pin: introPin,
+        anticipatePin: 1
+      }
+    });
+
+
+    const introLines =
+      document.querySelectorAll(".intro-line span");
+
+
+    introTL
+      .to(introLines[0], {
+        y: "0%",
+        duration: 1
+      })
+
+      .to({}, {
+        duration: 0.45
+      })
+
+      .to(introLines[1], {
+        y: "0%",
+        duration: 0.8
+      })
+
+      .to({}, {
+        duration: 0.35
+      })
+
+      .to(introLines[2], {
+        y: "0%",
+        duration: 0.9
+      })
+
+      .to({}, {
+        duration: 0.35
+      })
+
+      .to(introLines[3], {
+        y: "0%",
+        duration: 0.9
+      })
+
+      .to({}, {
+        duration: 0.35
+      })
+
+      .to(introLines[4], {
+        y: "0%",
+        duration: 1.1,
+        ease: "power4.out"
+      })
+
+      /* -------------------------------------------------------
+         IMPORTANT:
+         THIS IS THE LONG PASSION HOLD.
+      ------------------------------------------------------- */
+
+      .to({}, {
+        duration: 3.5
+      })
+
+      .to(introLines, {
+        scale: 1.08,
+        opacity: 0,
+        duration: 1.4,
+        stagger: 0.05,
+        ease: "power2.in"
+      });
+
+
+    /* =======================================================
+       HERO ANIMATION
+    ======================================================== */
+
+    gsap.from(".hero-kicker", {
+      y: 30,
+      opacity: 0,
+      duration: 1.2,
+      delay: 1.8,
+      ease: "power3.out",
+
+      scrollTrigger: {
+        trigger: "#hero",
+        start: "top 75%"
+      }
+    });
+
+
+    gsap.from(".hero-name span", {
+      yPercent: 110,
+      duration: 1.5,
+      stagger: 0.15,
+      delay: 1.9,
+      ease: "power4.out",
+
+      scrollTrigger: {
+        trigger: "#hero",
+        start: "top 75%"
+      }
+    });
+
+
+    gsap.from(".hero-description", {
+      y: 35,
+      opacity: 0,
+      duration: 1,
+      delay: 2.25,
+      ease: "power3.out",
+
+      scrollTrigger: {
+        trigger: "#hero",
+        start: "top 75%"
+      }
+    });
+
+
+    /* =======================================================
+       WHATSAPP FLOAT REVEAL
+    ======================================================== */
+
+    const whatsappFloat =
+      document.querySelector("#whatsappFloat");
+
+
+    ScrollTrigger.create({
+
+      trigger: "#hero",
+
+      start: "top 65%",
+
+      onEnter: () => {
+
+        whatsappFloat.classList.add("visible");
+
+      },
+
+      onLeaveBack: () => {
+
+        whatsappFloat.classList.remove("visible");
+
+      }
+
+    });
+
+
+    /* =======================================================
+       SECTION REVEALS
+    ======================================================== */
+
+    document.querySelectorAll(".section").forEach((section) => {
+
+      const title =
+        section.querySelector(".section-title");
+
+      if (title) {
+
+        gsap.from(title, {
+
+          yPercent: 80,
+          opacity: 0,
+
+          duration: 1.2,
+
+          ease: "power4.out",
+
+          scrollTrigger: {
+
+            trigger: section,
+
+            start: "top 75%",
+
+            toggleActions:
+              "play none none reverse"
+
+          }
+
+        });
+
+      }
+
+    });
+
+
+    /* =======================================================
+       IDENTITY
+    ======================================================== */
+
+    gsap.from(".identity-copy", {
+
+      x: -50,
+      opacity: 0,
+
+      duration: 1.1,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+
+        trigger: ".identity-grid",
+
+        start: "top 75%"
+
+      }
+
+    });
+
+
+    gsap.from(".identity-meta", {
+
+      x: 50,
+      opacity: 0,
+
+      duration: 1.1,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+
+        trigger: ".identity-grid",
+
+        start: "top 75%"
+
+      }
+
+    });
+
+
+    /* =======================================================
+       STATEMENT
+    ======================================================== */
+
+    gsap.from(".statement-text", {
+
+      scale: 0.92,
+      opacity: 0,
+
+      duration: 1.4,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+
+        trigger: ".statement",
+
+        start: "top 65%"
+
+      }
+
+    });
+
+
+    /* =======================================================
+       PROJECTS
+    ======================================================== */
+
+    gsap.from(".project", {
+
+      y: 50,
+      opacity: 0,
+
+      duration: 1,
+
+      stagger: 0.18,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+
+        trigger: ".project-list",
+
+        start: "top 75%"
+
+      }
+
+    });
+
+
+    /* =======================================================
+       PROCESS
+    ======================================================== */
+
+    gsap.from(".process-item", {
+
+      y: 60,
+      opacity: 0,
+
+      duration: 1,
+
+      stagger: 0.2,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+
+        trigger: ".process-grid",
+
+        start: "top 75%"
+
+      }
+
+    });
+
+
+    /* =======================================================
+       PHILOSOPHY
+    ======================================================== */
+
+    gsap.from(".philosophy-quote > div", {
+
+      yPercent: 100,
+      opacity: 0,
+
+      duration: 1.2,
+
+      stagger: 0.15,
+
+      ease: "power4.out",
+
+      scrollTrigger: {
+
+        trigger: ".philosophy-quote",
+
+        start: "top 75%"
+
+      }
+
+    });
+
+
+    /* =======================================================
+       CURRENT
+    ======================================================== */
+
+    gsap.from(".current-title", {
+
+      yPercent: 60,
+      opacity: 0,
+
+      duration: 1.5,
+
+      ease: "power4.out",
+
+      scrollTrigger: {
+
+        trigger: ".current",
+
+        start: "top 70%"
+
+      }
+
+    });
+
+
+    gsap.from(".current-description", {
+
+      y: 40,
+      opacity: 0,
+
+      duration: 1,
+
+      delay: 0.3,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+
+        trigger: ".current",
+
+        start: "top 70%"
+
+      }
+
+    });
+
+
+    /* =======================================================
+       CONTACT
+    ======================================================== */
+
+    gsap.from(".contact-title span", {
+
+      yPercent: 100,
+      opacity: 0,
+
+      duration: 1.2,
+
+      stagger: 0.15,
+
+      ease: "power4.out",
+
+      scrollTrigger: {
+
+        trigger: ".contact",
+
+        start: "top 70%"
+
+      }
+
+    });
+
+
+    gsap.from(".contact-copy", {
+
+      y: 30,
+      opacity: 0,
+
+      duration: 1,
+
+      delay: 0.35,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+
+        trigger: ".contact-bottom",
+
+        start: "top 80%"
+
+      }
+
+    });
+
+
+    gsap.from(".contact-link", {
+
+      x: 30,
+      opacity: 0,
+
+      duration: 0.8,
+
+      stagger: 0.12,
+
+      delay: 0.45,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+
+        trigger: ".contact-bottom",
+
+        start: "top 80%"
+
+      }
+
+    });
+
+
+    gsap.from(".whatsapp-main", {
+
+      y: 25,
+      opacity: 0,
+
+      duration: 0.9,
+
+      delay: 0.55,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+
+        trigger: ".contact-bottom",
+
+        start: "top 80%"
+
+      }
+
+    });
+
+
+    /* =======================================================
+       FOOTER
+    ======================================================== */
+
+    gsap.from(".footer-brand", {
+
+      yPercent: 60,
+      opacity: 0,
+
+      duration: 1.3,
+
+      ease: "power4.out",
+
+      scrollTrigger: {
+
+        trigger: "footer",
+
+        start: "top 80%"
+
+      }
+
+    });
+
+
+    /* =======================================================
+       SMOOTH PROJECT HOVER
+    ======================================================== */
+
+    document.querySelectorAll(".project").forEach((project) => {
+
+      project.addEventListener("mouseenter", () => {
+
+        gsap.to(project, {
+          duration: 0.35,
+          ease: "power2.out"
+        });
+
+      });
+
+      project.addEventListener("mouseleave", () => {
+
+        gsap.to(project, {
+          duration: 0.35,
+          ease: "power2.out"
+        });
+
+      });
+
+    });
+
+
+    /* =======================================================
+       REFRESH SCROLLTRIGGER AFTER LOAD
+    ======================================================== */
+
+    window.addEventListener("load", () => {
+
+      setTimeout(() => {
+
+        ScrollTrigger.refresh();
+
+      }, 500);
+
+    });
+
+
+    /* =======================================================
+       REDUCED MOTION
+    ======================================================== */
+
+    if (
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches
+    ) {
+
+      gsap.set(introLines, {
+        y: "0%",
+        opacity: 1
+      });
+
+      ScrollTrigger.getAll().forEach((trigger) => {
+        trigger.disable();
+      });
+
+      whatsappFloat.classList.add("visible");
+
+    }
+
+  </script>
+
+</body>
+</html>
